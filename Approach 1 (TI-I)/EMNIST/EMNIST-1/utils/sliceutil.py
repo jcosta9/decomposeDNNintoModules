@@ -27,6 +27,9 @@ from collections import defaultdict
 import queue as Q
 from mpmath.tests.test_linalg import b1
 
+import logging
+import pandas as pd
+
 
 class Slice:
     
@@ -72,7 +75,7 @@ class Slice:
     '''
     Get the dynamic values at different nodes 
     '''
-    def dynamicmodify(self, nm, x,img_rows = 28, img_cols = 28):
+    def dynamicmodify(self, nm, x, index,img_rows = 28, img_cols = 28):
         X = x.reshape(img_rows*img_cols,)
         X1 = np.dot(X,self.W1)
         X1 = np.add(X1, self.b1)
@@ -84,6 +87,10 @@ class Slice:
         #W2 = np.zeros_like(self.W2)
         #b1 = np.zeros_like(self.b1)
         #b2 = np.zeros_like(self.b2)
+
+        pd.Series(X1).to_csv(fr"data\intermediate\{index}_X1_tii.csv")
+        pd.Series(X2).to_csv(fr"data\intermediate\{index}_X2_tii.csv")
+
         for i in range(X1.shape[0]):
             if X1[i] <= 0:
                 #print("Zero X1")
@@ -103,9 +110,15 @@ class Slice:
         #print(self.D1)
         #print("D2")
         #print(self.D2)
+
+        pd.DataFrame(self.D1).to_csv(fr"data\intermediate\{index}_D1_tii.csv")
+        pd.DataFrame(self.D2).to_csv(fr"data\intermediate\{index}_D2_tii.csv")
+        pd.Series(self.d1).to_csv(fr"data\intermediate\{index}_dd1_tii.csv")
+        pd.Series(self.d2).to_csv(fr"data\intermediate\{index}_dd2_tii.csv")
+
         return self.D1, self.D2, self.d1, self.d2
     
-    def modifyThroughInterSection(self,nm, x,img_rows = 28, img_cols = 28):
+    def modifyThroughInterSection(self,nm, x, index,img_rows = 28, img_cols = 28):
         X = x.reshape(img_rows*img_cols,)
         X1 = np.dot(X,self.W1)
         X1 = np.add(X1, self.b1)
@@ -117,6 +130,12 @@ class Slice:
         #W2 = np.zeros_like(self.W2)
         #b1 = np.zeros_like(self.b1)
         #b2 = np.zeros_like(self.b2)
+
+        logging.info(f"Before executing loop for index {index}, first was {self.first}")
+
+        pd.Series(X1).to_csv(fr"data\intermediate\{index}_X1.csv")
+        pd.Series(X2).to_csv(fr"data\intermediate\{index}_X2.csv")
+
         for i in range(X1.shape[0]):
             if X1[i] <= 0:
                 #print("Zero X1")
@@ -162,6 +181,21 @@ class Slice:
         #print(self.D2)
         if self.first == True:
             self.first = False
+
+
+
+        pd.DataFrame(self.D1).to_csv(fr"data\intermediate\{index}_D1.csv")
+        pd.DataFrame(self.D2).to_csv(fr"data\intermediate\{index}_D2.csv")
+
+        pd.DataFrame(self.W1).to_csv(fr"data\intermediate\{index}_W1.csv")
+        pd.DataFrame(self.W2).to_csv(fr"data\intermediate\{index}_W2.csv")
+
+        pd.Series(self.d1).to_csv(fr"data\intermediate\{index}_dd1.csv")
+        pd.Series(self.d2).to_csv(fr"data\intermediate\{index}_dd2.csv")
+        pd.Series(self.b1).to_csv(fr"data\intermediate\{index}_b1.csv")
+        pd.Series(self.b2).to_csv(fr"data\intermediate\{index}_b2.csv")
+
+        logging.info(f"After executing loop for index {index}, first is {self.first}")
         return self.D1, self.D2, self.d1, self.d2
     
     def getLabel(self,y):
